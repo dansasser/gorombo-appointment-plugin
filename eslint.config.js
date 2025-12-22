@@ -27,6 +27,8 @@ export default [
   {
     rules: {
       'no-restricted-exports': 'off',
+      // Disable due to ESLint 9.x / typescript-eslint version incompatibility
+      '@typescript-eslint/no-unused-expressions': 'off',
     },
   },
   {

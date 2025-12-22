@@ -1,218 +1,308 @@
-# Payload Plugin Template
+# Gorombo Appointments Plugin
 
-A template repo to create a [Payload CMS](https://payloadcms.com) plugin.
+A full-featured appointments, scheduling, and booking plugin for [PayloadCMS 3.x](https://payloadcms.com).
 
-Payload is built with a robust infrastructure intended to support Plugins with ease. This provides a simple, modular, and reusable way for developers to extend the core capabilities of Payload.
+[![CI](https://github.com/dansasser/gorombo-appointment-plugin/actions/workflows/ci.yml/badge.svg)](https://github.com/dansasser/gorombo-appointment-plugin/actions/workflows/ci.yml)
+[![npm version](https://badge.fury.io/js/gorombo-appointments-plugin.svg)](https://www.npmjs.com/package/gorombo-appointments-plugin)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-To build your own Payload plugin, all you need is:
+## Features
 
-- An understanding of the basic Payload concepts
-- And some JavaScript/Typescript experience
+- **Admin Calendar Dashboard** - Week/Day view calendar integrated into Payload admin
+- **Services Management** - Define bookable services with duration, pricing, and colors
+- **Team Members** - Assign appointments to team members with availability settings
+- **Guest Customers** - Support for non-registered customers booking appointments
+- **Automatic Scheduling** - Auto-calculates end times based on service duration
+- **Business Hours** - Configure opening times, breaks, and scheduling rules
+- **Email Notifications** - Automatic confirmation and update emails
+- **REST API** - Full headless API for custom frontend booking flows
+- **Available Slots Endpoint** - Query available booking times
 
-## Background
+## Installation
 
-Here is a short recap on how to integrate plugins with Payload, to learn more visit the [plugin overview page](https://payloadcms.com/docs/plugins/overview).
+```bash
+npm install gorombo-appointments-plugin
+# or
+pnpm add gorombo-appointments-plugin
+# or
+yarn add gorombo-appointments-plugin
+```
 
-### How to install a plugin
+## Quick Start
 
-To install any plugin, simply add it to your payload.config() in the Plugin array.
+Add the plugin to your Payload config:
 
-```ts
-import myPlugin from 'my-plugin'
+```typescript
+// payload.config.ts
+import { buildConfig } from 'payload'
+import { goromboAppointmentsPlugin } from 'gorombo-appointments-plugin'
 
-export const config = buildConfig({
+export default buildConfig({
+  // ... your config
   plugins: [
-    // You can pass options to the plugin
-    myPlugin({
-      enabled: true,
+    goromboAppointmentsPlugin({
+      // Optional configuration
     }),
   ],
 })
 ```
 
-### Initialization
+Regenerate types and import map:
 
-The initialization process goes in the following order:
-
-1. Incoming config is validated
-2. **Plugins execute**
-3. Default options are integrated
-4. Sanitization cleans and validates data
-5. Final config gets initialized
-
-## Building the Plugin
-
-When you build a plugin, you are purely building a feature for your project and then abstracting it outside of the project.
-
-### Template Files
-
-In the Payload [plugin template](https://github.com/payloadcms/payload/tree/main/templates/plugin), you will see a common file structure that is used across all plugins:
-
-1. root folder
-2. /src folder
-3. /dev folder
-
-#### Root
-
-In the root folder, you will see various files that relate to the configuration of the plugin. We set up our environment in a similar manner in Payload core and across other projects, so hopefully these will look familiar:
-
-- **README**.md\* - This contains instructions on how to use the template. When you are ready, update this to contain instructions on how to use your Plugin.
-- **package**.json\* - Contains necessary scripts and dependencies. Overwrite the metadata in this file to describe your Plugin.
-- .**eslint**.config.js - Eslint configuration for reporting on problematic patterns.
-- .**gitignore** - List specific untracked files to omit from Git.
-- .**prettierrc**.json - Configuration for Prettier code formatting.
-- **tsconfig**.json - Configures the compiler options for TypeScript
-- .**swcrc** - Configuration for SWC, a fast compiler that transpiles and bundles TypeScript.
-- **vitest**.config.js - Config file for Vitest, defining how tests are run and how modules are resolved
-
-**IMPORTANT\***: You will need to modify these files.
-
-#### Dev
-
-In the dev folder, you’ll find a basic payload project, created with `npx create-payload-app` and the blank template.
-
-**IMPORTANT**: Make a copy of the `.env.example` file and rename it to `.env`. Update the `DATABASE_URL` to match the database you are using and your plugin name. Update `PAYLOAD_SECRET` to a unique string.
-**You will not be able to run `pnpm/yarn dev` until you have created this `.env` file.**
-
-`myPlugin` has already been added to the `payload.config()` file in this project.
-
-```ts
-plugins: [
-  myPlugin({
-    collections: {
-      posts: true,
-    },
-  }),
-]
+```bash
+npm run generate:types
+npm run generate:importmap
 ```
 
-Later when you rename the plugin or add additional options, **make sure to update it here**.
+## Configuration Options
 
-You may wish to add collections or expand the test project depending on the purpose of your plugin. Just make sure to keep this dev environment as simplified as possible - users should be able to install your plugin without additional configuration required.
+```typescript
+goromboAppointmentsPlugin({
+  // Slug for your media collection (default: 'media')
+  mediaCollectionSlug: 'media',
 
-When you’re ready to start development, initiate the project with `pnpm/npm/yarn dev` and pull up [http://localhost:3000](http://localhost:3000) in your browser.
-
-#### Src
-
-Now that we have our environment setup and we have a dev project ready to - it’s time to build the plugin!
-
-**index.ts**
-
-The essence of a Payload plugin is simply to extend the payload config - and that is exactly what we are doing in this file.
-
-```ts
-export const myPlugin =
-  (pluginOptions: MyPluginConfig) =>
-  (config: Config): Config => {
-    // do cool stuff with the config here
-
-    return config
-  }
-```
-
-First, we receive the existing payload config along with any plugin options.
-
-From here, you can extend the config as you wish.
-
-Finally, you return the config and that is it!
-
-##### Spread Syntax
-
-Spread syntax (or the spread operator) is a feature in JavaScript that uses the dot notation **(...)** to spread elements from arrays, strings, or objects into various contexts.
-
-We are going to use spread syntax to allow us to add data to existing arrays without losing the existing data. It is crucial to spread the existing data correctly – else this can cause adverse behavior and conflicts with Payload config and other plugins.
-
-Let’s say you want to build a plugin that adds a new collection:
-
-```ts
-config.collections = [
-  ...(config.collections || []),
-  // Add additional collections here
-]
-```
-
-First we spread the `config.collections` to ensure that we don’t lose the existing collections, then you can add any additional collections just as you would in a regular payload config.
-
-This same logic is applied to other properties like admin, hooks, globals:
-
-```ts
-config.globals = [
-  ...(config.globals || []),
-  // Add additional globals here
-]
-
-config.hooks = {
-  ...(incomingConfig.hooks || {}),
-  // Add additional hooks here
-}
-```
-
-Some properties will be slightly different to extend, for instance the onInit property:
-
-```ts
-import { onInitExtension } from './onInitExtension' // example file
-
-config.onInit = async (payload) => {
-  if (incomingConfig.onInit) await incomingConfig.onInit(payload)
-  // Add additional onInit code by defining an onInitExtension function
-  onInitExtension(pluginOptions, payload)
-}
-```
-
-If you wish to add to the onInit, you must include the **async/await**. We don’t use spread syntax in this case, instead you must await the existing `onInit` before running additional functionality.
-
-In the template, we have stubbed out some addition `onInit` actions that seeds in a document to the `plugin-collection`, you can use this as a base point to add more actions - and if not needed, feel free to delete it.
-
-##### Types.ts
-
-If your plugin has options, you should define and provide types for these options.
-
-```ts
-export type MyPluginConfig = {
-  /**
-   * List of collections to add a custom field
-   */
-  collections?: Partial<Record<CollectionSlug, true>>
-  /**
-   * Disable the plugin
-   */
-  disabled?: boolean
-}
-```
-
-If possible, include JSDoc comments to describe the options and their types. This allows a developer to see details about the options in their editor.
-
-##### Testing
-
-Having a test suite for your plugin is essential to ensure quality and stability. **Vitest** is a fast, modern testing framework that works seamlessly with Vite and supports TypeScript out of the box.
-
-Vitest organizes tests into test suites and cases, similar to other testing frameworks. We recommend creating individual tests based on the expected behavior of your plugin from start to finish.
-
-Writing tests with Vitest is very straightforward, and you can learn more about how it works in the [Vitest documentation.](https://vitest.dev/)
-
-For this template, we stubbed out `int.spec.ts` in the `dev` folder where you can write your tests.
-
-```ts
-describe('Plugin tests', () => {
-  // Create tests to ensure expected behavior from the plugin
-  it('some condition that must be met', () => {
-   // Write your test logic here
-   expect(...)
-  })
+  // Slug for your users collection (default: 'users')
+  usersCollectionSlug: 'users',
 })
 ```
 
-## Best practices
+## What Gets Added
 
-With this tutorial and the plugin template, you should have everything you need to start building your own plugin.
-In addition to the setup, here are other best practices aim we follow:
+### Collections
 
-- **Providing an enable / disable option:** For a better user experience, provide a way to disable the plugin without uninstalling it. This is especially important if your plugin adds additional webpack aliases, this will allow you to still let the webpack run to prevent errors.
-- **Include tests in your GitHub CI workflow**: If you’ve configured tests for your package, integrate them into your workflow to run the tests each time you commit to the plugin repository. Learn more about [how to configure tests into your GitHub CI workflow.](https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs)
-- **Publish your finished plugin to NPM**: The best way to share and allow others to use your plugin once it is complete is to publish an NPM package. This process is straightforward and well documented, find out more [creating and publishing a NPM package here.](https://docs.npmjs.com/creating-and-publishing-scoped-public-packages/).
-- **Add payload-plugin topic tag**: Apply the tag **payload-plugin **to your GitHub repository. This will boost the visibility of your plugin and ensure it gets listed with [existing payload plugins](https://github.com/topics/payload-plugin).
-- **Use [Semantic Versioning](https://semver.org/) (SemVar)** - With the SemVar system you release version numbers that reflect the nature of changes (major, minor, patch). Ensure all major versions reference their Payload compatibility.
+| Collection | Slug | Description |
+|------------|------|-------------|
+| Services | `services` | Bookable services with duration, price, and color |
+| Team Members | `team-members` | Staff who can be assigned to appointments |
+| Guest Customers | `guest-customers` | Non-registered booking customers |
+| Appointments | `appointments` | The bookings themselves |
 
-# Questions
+### Globals
 
-Please contact [Payload](mailto:dev@payloadcms.com) with any questions about using this plugin template.
+| Global | Slug | Description |
+|--------|------|-------------|
+| Opening Times | `opening-times` | Business hours and scheduling settings |
+
+## API Reference
+
+PayloadCMS automatically generates REST API endpoints for all collections. Here's the complete API reference:
+
+### Services
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/services` | List all services |
+| GET | `/api/services/:id` | Get a single service |
+| POST | `/api/services` | Create a service |
+| PATCH | `/api/services/:id` | Update a service |
+| DELETE | `/api/services/:id` | Delete a service |
+
+**Query examples:**
+```bash
+# Get all active services
+GET /api/services?where[isActive][equals]=true
+
+# Get services sorted by price
+GET /api/services?sort=price
+```
+
+### Team Members
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/team-members` | List all team members |
+| GET | `/api/team-members/:id` | Get a single team member |
+| POST | `/api/team-members` | Create a team member |
+| PATCH | `/api/team-members/:id` | Update a team member |
+| DELETE | `/api/team-members/:id` | Delete a team member |
+
+**Query examples:**
+```bash
+# Get team members taking appointments
+GET /api/team-members?where[takingAppointments][equals]=true
+```
+
+### Guest Customers
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/guest-customers` | List all guest customers |
+| GET | `/api/guest-customers/:id` | Get a single guest customer |
+| POST | `/api/guest-customers` | Create a guest customer |
+| PATCH | `/api/guest-customers/:id` | Update a guest customer |
+| DELETE | `/api/guest-customers/:id` | Delete a guest customer |
+
+**Query examples:**
+```bash
+# Find guest by email
+GET /api/guest-customers?where[email][equals]=john@example.com
+```
+
+### Appointments
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/appointments` | List all appointments |
+| GET | `/api/appointments/:id` | Get a single appointment |
+| POST | `/api/appointments` | Create an appointment |
+| PATCH | `/api/appointments/:id` | Update an appointment |
+| DELETE | `/api/appointments/:id` | Delete an appointment |
+
+**Query examples:**
+```bash
+# Get appointments for a specific date range
+GET /api/appointments?where[startDateTime][greater_than_equal]=2024-01-01&where[startDateTime][less_than]=2024-01-31
+
+# Get appointments by status
+GET /api/appointments?where[status][equals]=scheduled
+
+# Get appointments with related data
+GET /api/appointments?depth=1
+```
+
+### Available Slots (Custom Endpoint)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/appointments/available-slots` | Query available booking times |
+
+**Query parameters:**
+- `date` (required) - ISO date string (YYYY-MM-DD)
+- `serviceId` (required) - ID of the service
+- `teamMemberId` (optional) - Filter by specific team member
+
+**Example:**
+```bash
+GET /api/appointments/available-slots?date=2024-01-15&serviceId=abc123
+```
+
+**Response:**
+```json
+{
+  "date": "2024-01-15",
+  "serviceId": "abc123",
+  "slots": [
+    { "start": "2024-01-15T09:00:00Z", "end": "2024-01-15T09:30:00Z", "available": true },
+    { "start": "2024-01-15T09:30:00Z", "end": "2024-01-15T10:00:00Z", "available": true }
+  ]
+}
+```
+
+### Opening Times (Global)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/globals/opening-times` | Get business hours settings |
+| POST | `/api/globals/opening-times` | Update business hours settings |
+
+## Booking Flow Example
+
+### 1. Get Available Services
+
+```bash
+GET /api/services?where[isActive][equals]=true
+```
+
+### 2. Get Available Time Slots
+
+```bash
+GET /api/appointments/available-slots?date=2024-01-15&serviceId=SERVICE_ID
+```
+
+### 3. Create Guest Customer (if not registered)
+
+```bash
+POST /api/guest-customers
+Content-Type: application/json
+
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "john@example.com",
+  "phone": "+1234567890",
+  "source": "website"
+}
+```
+
+### 4. Create Appointment
+
+```bash
+POST /api/appointments
+Content-Type: application/json
+
+{
+  "type": "appointment",
+  "service": "SERVICE_ID",
+  "guest": "GUEST_ID",
+  "startDateTime": "2024-01-15T09:00:00Z",
+  "status": "scheduled"
+}
+```
+
+## Frontend Integration
+
+See the [examples/BookingWidget.tsx](./examples/BookingWidget.tsx) for a complete React booking component with:
+- 3-step booking flow (service -> date/time -> details)
+- Available slots display
+- Guest customer creation
+- Booking confirmation
+
+## Admin Calendar
+
+The plugin automatically adds a calendar dashboard to your Payload admin panel showing:
+- Week and day views
+- Color-coded events by service
+- Click to view appointment details
+- Quick navigation between dates
+
+## Development
+
+```bash
+# Install dependencies
+npm install
+
+# Run dev environment
+npm run dev
+
+# Run tests
+npm test
+
+# Lint code
+npm run lint
+
+# Format code
+npm run format
+
+# Build for production
+npm run build
+```
+
+## Requirements
+
+- PayloadCMS 3.37.0 or higher
+- Node.js 18.20.2+ or 20.9.0+
+- React 19.x
+
+## Contributing
+
+Contributions are welcome! Please read our [contributing guidelines](./CONTRIBUTING.md) and submit a pull request.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'feat: add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+MIT License - see [LICENSE](./LICENSE) for details.
+
+## Author
+
+Created by [Daniel T Sasser II](https://github.com/Gorombo)
+
+## Links
+
+- [PayloadCMS](https://payloadcms.com)
+- [Plugin Documentation](https://payloadcms.com/docs/plugins/overview)
+- [Report Issues](https://github.com/dansasser/gorombo-appointment-plugin/issues)

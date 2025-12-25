@@ -1,5 +1,5 @@
 {
-  "name": "gorombo-appointments-plugin",
+  "name": "gorombo-payload-appointments",
   "version": "1.0.0",
   "description": "Appointments, scheduling, and booking plugin for PayloadCMS 3.x",
   "author": "Daniel T Sasser II <dan@gorombo.com>",

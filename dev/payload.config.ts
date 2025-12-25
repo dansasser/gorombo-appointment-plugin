@@ -3,7 +3,7 @@ import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { MongoMemoryReplSet } from 'mongodb-memory-server'
 import path from 'path'
 import { buildConfig } from 'payload'
-import { goromboAppointmentsPlugin } from 'gorombo-appointments-plugin'
+import { goromboAppointmentsPlugin } from 'gorombo-payload-appointments'
 import sharp from 'sharp'
 import { fileURLToPath } from 'url'
 

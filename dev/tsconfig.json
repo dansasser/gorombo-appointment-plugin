@@ -19,13 +19,13 @@
       "@payload-config": [
         "./payload.config.ts"
       ],
-      "gorombo-appointments-plugin": [
+      "gorombo-payload-appointments": [
         "../src/index.ts"
       ],
-      "gorombo-appointments-plugin/client": [
+      "gorombo-payload-appointments/client": [
         "../src/exports/client.ts"
       ],
-      "gorombo-appointments-plugin/rsc": [
+      "gorombo-payload-appointments/rsc": [
         "../src/exports/rsc.ts"
       ]
     },

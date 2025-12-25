@@ -120,7 +120,7 @@ export const goromboAppointmentsPlugin =
     }
 
     config.admin.components.beforeDashboard.push(
-      `gorombo-appointments-plugin/client#BeforeDashboardClient`,
+      `gorombo-payload-appointments/client#BeforeDashboardClient`,
     )
 
     // Add initialization logic

@@ -1,9 +1,9 @@
-import { BeforeDashboardClient as BeforeDashboardClient_fc6e7dd366b9e2c8ce77d31252122343 } from 'gorombo-appointments-plugin/client'
-import { BeforeDashboardServer as BeforeDashboardServer_c4406fcca100b2553312c5a3d7520a3f } from 'gorombo-appointments-plugin/rsc'
+import { BeforeDashboardClient as BeforeDashboardClient_fc6e7dd366b9e2c8ce77d31252122343 } from 'gorombo-payload-appointments/client'
+import { BeforeDashboardServer as BeforeDashboardServer_c4406fcca100b2553312c5a3d7520a3f } from 'gorombo-payload-appointments/rsc'
 
 export const importMap = {
-  'gorombo-appointments-plugin/client#BeforeDashboardClient':
+  'gorombo-payload-appointments/client#BeforeDashboardClient':
     BeforeDashboardClient_fc6e7dd366b9e2c8ce77d31252122343,
-  'gorombo-appointments-plugin/rsc#BeforeDashboardServer':
+  'gorombo-payload-appointments/rsc#BeforeDashboardServer':
     BeforeDashboardServer_c4406fcca100b2553312c5a3d7520a3f,
 }

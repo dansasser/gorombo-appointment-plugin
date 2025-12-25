@@ -3,7 +3,7 @@
 A full-featured appointments, scheduling, and booking plugin for [PayloadCMS 3.x](https://payloadcms.com).
 
 [![CI](https://github.com/dansasser/gorombo-appointment-plugin/actions/workflows/ci.yml/badge.svg)](https://github.com/dansasser/gorombo-appointment-plugin/actions/workflows/ci.yml)
-[![npm version](https://badge.fury.io/js/gorombo-appointments-plugin.svg)](https://www.npmjs.com/package/gorombo-appointments-plugin)
+[![npm version](https://badge.fury.io/js/gorombo-payload-appointments.svg)](https://www.npmjs.com/package/gorombo-payload-appointments)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Features
@@ -21,11 +21,11 @@ A full-featured appointments, scheduling, and booking plugin for [PayloadCMS 3.x
 ## Installation
 
 ```bash
-npm install gorombo-appointments-plugin
+npm install gorombo-payload-appointments
 # or
-pnpm add gorombo-appointments-plugin
+pnpm add gorombo-payload-appointments
 # or
-yarn add gorombo-appointments-plugin
+yarn add gorombo-payload-appointments
 ```
 
 ## Quick Start
@@ -35,7 +35,7 @@ Add the plugin to your Payload config:
 ```typescript
 // payload.config.ts
 import { buildConfig } from 'payload'
-import { goromboAppointmentsPlugin } from 'gorombo-appointments-plugin'
+import { goromboAppointmentsPlugin } from 'gorombo-payload-appointments'
 
 export default buildConfig({
   // ... your config

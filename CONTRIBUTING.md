@@ -12,8 +12,8 @@ Please be respectful and constructive in all interactions. We're all here to bui
 
 2. **Clone your fork**:
    ```bash
-   git clone https://github.com/YOUR_USERNAME/gorombo-appointments-plugin.git
-   cd gorombo-appointments-plugin
+   git clone https://github.com/YOUR_USERNAME/gorombo-payload-appointments.git
+   cd gorombo-payload-appointments
    ```
 
 3. **Install dependencies**:

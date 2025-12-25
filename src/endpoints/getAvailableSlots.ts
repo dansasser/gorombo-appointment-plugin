@@ -14,16 +14,10 @@ interface AvailableSlotsResponse {
 }
 
 /**
- * GET /api/appointments/available-slots
- *
- * Query params:
- *   - date: YYYY-MM-DD (required)
- *   - serviceId: string (required)
- *   - teamMemberId: string (optional)
- *
- * Returns available time slots for booking
+ * Factory function to create the available slots handler with configurable team collection
+ * @param teamCollectionSlug - The slug of the external team collection to use
  */
-export const getAvailableSlotsHandler: PayloadHandler = async (req) => {
+export const createGetAvailableSlotsHandler = (teamCollectionSlug: string): PayloadHandler => async (req) => {
   try {
     const url = new URL(req.url || '', 'http://localhost')
     const dateParam = url.searchParams.get('date')
@@ -145,7 +139,7 @@ export const getAvailableSlotsHandler: PayloadHandler = async (req) => {
     if (teamMemberId) {
       const teamMember = await req.payload.findByID({
         id: teamMemberId,
-        collection: 'team-members',
+        collection: teamCollectionSlug,
       })
 
       if (!teamMember) {
@@ -155,7 +149,8 @@ export const getAvailableSlotsHandler: PayloadHandler = async (req) => {
         )
       }
 
-      if (!teamMember.takingAppointments) {
+      // Only block if explicitly set to false - undefined means taking appointments
+      if (teamMember.takingAppointments === false) {
         return Response.json(
           { error: 'Team member is not taking appointments' },
           { status: 400 }

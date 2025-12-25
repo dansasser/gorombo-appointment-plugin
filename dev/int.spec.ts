@@ -16,8 +16,9 @@ describe('Gorombo Appointments Plugin', () => {
       expect(payload.collections['services']).toBeDefined()
     })
 
-    test('team-members collection exists', () => {
-      expect(payload.collections['team-members']).toBeDefined()
+    test('team collection is referenced correctly', () => {
+      // Team collection is provided externally, plugin just references it
+      expect(payload.collections['team']).toBeDefined()
     })
 
     test('guest-customers collection exists', () => {
@@ -56,7 +57,7 @@ describe('Gorombo Appointments Plugin', () => {
 
     test('can create a team member', async () => {
       const teamMember = await payload.create({
-        collection: 'team-members',
+        collection: 'team',
         data: {
           name: 'Test Team Member',
           email: 'team@test.com',

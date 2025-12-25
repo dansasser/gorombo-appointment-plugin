@@ -47,6 +47,32 @@ const buildConfigWithMemoryDB = async () => {
           staticDir: path.resolve(dirname, 'media'),
         },
       },
+      {
+        // Mock team collection for testing - plugin references this externally
+        slug: 'team',
+        fields: [
+          { name: 'name', type: 'text', required: true },
+          { name: 'email', type: 'email' },
+          { name: 'role', type: 'text' },
+          { name: 'takingAppointments', type: 'checkbox', defaultValue: true },
+          { name: 'services', type: 'relationship', relationTo: 'services', hasMany: true },
+          {
+            name: 'availability',
+            type: 'array',
+            fields: [
+              { name: 'day', type: 'select', options: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'] },
+              { name: 'isAvailable', type: 'checkbox', defaultValue: true },
+              { name: 'startTime', type: 'text', defaultValue: '09:00' },
+              { name: 'endTime', type: 'text', defaultValue: '17:00' },
+              { name: 'breakStart', type: 'text' },
+              { name: 'breakEnd', type: 'text' },
+            ],
+          },
+        ],
+        admin: {
+          useAsTitle: 'name',
+        },
+      },
     ],
     db: mongooseAdapter({
       ensureIndexes: true,
@@ -59,9 +85,7 @@ const buildConfigWithMemoryDB = async () => {
     },
     plugins: [
       goromboAppointmentsPlugin({
-        collections: {
-          posts: true,
-        },
+        teamCollectionSlug: 'team',
       }),
     ],
     secret: process.env.PAYLOAD_SECRET || 'test-secret_key',

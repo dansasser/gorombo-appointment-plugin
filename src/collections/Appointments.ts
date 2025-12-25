@@ -42,7 +42,12 @@ export const Appointments: CollectionConfig = {
         condition: (data) => data?.type === 'appointment',
       },
       relationTo: 'services',
-      required: true,
+      validate: (value: unknown, { siblingData }: { siblingData: Record<string, unknown> }) => {
+        if (siblingData?.type === 'appointment' && !value) {
+          return 'Service is required for appointments'
+        }
+        return true
+      },
     },
     {
       name: 'customer',

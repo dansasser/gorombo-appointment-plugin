@@ -11,10 +11,10 @@ interface EmailContext {
 }
 
 /**
- * Hook to send confirmation/update emails to customers after appointment changes
- * Runs after save on the Appointments collection
+ * Factory function to create the email hook with configurable team collection
+ * @param teamCollectionSlug - The slug of the external team collection to use
  */
-export const sendCustomerEmail: CollectionAfterChangeHook = async ({
+export const createSendCustomerEmail = (teamCollectionSlug: string): CollectionAfterChangeHook => async ({
   doc,
   operation,
   previousDoc,
@@ -49,7 +49,7 @@ export const sendCustomerEmail: CollectionAfterChangeHook = async ({
 
   // Build email context
   try {
-    const context = await buildEmailContext(doc, req)
+    const context = await buildEmailContext(doc, req, teamCollectionSlug)
 
     if (!context) {
       return doc
@@ -97,7 +97,7 @@ export const sendCustomerEmail: CollectionAfterChangeHook = async ({
   return doc
 }
 
-async function buildEmailContext(doc: any, req: any): Promise<EmailContext | null> {
+async function buildEmailContext(doc: any, req: any, teamCollectionSlug: string): Promise<EmailContext | null> {
   let customerName = ''
   let customerEmail = ''
 
@@ -160,7 +160,7 @@ async function buildEmailContext(doc: any, req: any): Promise<EmailContext | nul
       const teamMemberId = typeof doc.teamMember === 'object' ? doc.teamMember.id : doc.teamMember
       const teamMember = await req.payload.findByID({
         id: teamMemberId,
-        collection: 'team-members',
+        collection: teamCollectionSlug,
       })
       if (teamMember?.name) {
         teamMemberName = teamMember.name

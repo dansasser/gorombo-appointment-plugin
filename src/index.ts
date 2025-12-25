@@ -3,11 +3,10 @@ import type { CollectionConfig, Config } from 'payload'
 import { Appointments } from './collections/Appointments.js'
 import { GuestCustomers } from './collections/GuestCustomers.js'
 import { Services } from './collections/Services.js'
-import { TeamMembers } from './collections/TeamMembers.js'
-import { getAvailableSlotsHandler } from './endpoints/getAvailableSlots.js'
+import { createGetAvailableSlotsHandler } from './endpoints/getAvailableSlots.js'
 import { OpeningTimes } from './globals/OpeningTimes.js'
 import { addAdminTitle } from './hooks/addAdminTitle.js'
-import { sendCustomerEmail } from './hooks/sendCustomerEmail.js'
+import { createSendCustomerEmail } from './hooks/sendCustomerEmail.js'
 import { setEndDateTime } from './hooks/setEndDateTime.js'
 import { validateCustomerOrGuest } from './hooks/validateCustomerOrGuest.js'
 
@@ -26,13 +25,23 @@ export type GoromboAppointmentsPluginConfig = {
    * If not provided, defaults to 'users'
    */
   usersCollectionSlug?: string
+  /**
+   * External team collection slug for team member relationships
+   * The plugin does NOT create its own team collection - you must provide one
+   * If not provided, defaults to 'team'
+   */
+  teamCollectionSlug?: string
 }
 
 export const goromboAppointmentsPlugin =
   (pluginOptions: GoromboAppointmentsPluginConfig = {}) =>
   (config: Config): Config => {
-    const { disabled = false, mediaCollectionSlug = 'media', usersCollectionSlug = 'users' } =
-      pluginOptions
+    const {
+      disabled = false,
+      mediaCollectionSlug = 'media',
+      usersCollectionSlug = 'users',
+      teamCollectionSlug = 'team',
+    } = pluginOptions
 
     // Initialize arrays if not present
     if (!config.collections) {
@@ -55,7 +64,7 @@ export const goromboAppointmentsPlugin =
     const AppointmentsWithHooks: CollectionConfig = {
       ...Appointments,
       hooks: {
-        afterChange: [sendCustomerEmail],
+        afterChange: [createSendCustomerEmail(teamCollectionSlug)],
         beforeChange: [setEndDateTime, addAdminTitle],
         beforeValidate: [validateCustomerOrGuest],
       },
@@ -74,26 +83,20 @@ export const goromboAppointmentsPlugin =
       }
     }
 
-    // Create TeamMembers with correct media collection
-    const TeamMembersWithMedia: CollectionConfig = { ...TeamMembers }
-
-    // Update avatar field if not using default media collection
-    if (mediaCollectionSlug !== 'media') {
-      const avatarFieldIndex = TeamMembersWithMedia.fields.findIndex(
-        (f) => 'name' in f && f.name === 'avatar'
-      )
-      if (avatarFieldIndex !== -1) {
-        const avatarField = TeamMembersWithMedia.fields[avatarFieldIndex]
-        if ('relationTo' in avatarField) {
-          (avatarField as { relationTo: string }).relationTo = mediaCollectionSlug
-        }
+    // Update teamMember field to use configured team collection
+    const teamMemberFieldIndex = AppointmentsWithHooks.fields.findIndex(
+      (f) => 'name' in f && f.name === 'teamMember'
+    )
+    if (teamMemberFieldIndex !== -1) {
+      const teamMemberField = AppointmentsWithHooks.fields[teamMemberFieldIndex]
+      if ('relationTo' in teamMemberField) {
+        (teamMemberField as { relationTo: string }).relationTo = teamCollectionSlug
       }
     }
 
-    // Add collections
+    // Add collections (note: team collection is NOT created by plugin - must be provided externally)
     config.collections.push(AppointmentsWithHooks)
     config.collections.push(Services)
-    config.collections.push(TeamMembersWithMedia)
     config.collections.push(GuestCustomers)
 
     // Add globals
@@ -109,7 +112,7 @@ export const goromboAppointmentsPlugin =
 
     // Add endpoints
     config.endpoints.push({
-      handler: getAvailableSlotsHandler,
+      handler: createGetAvailableSlotsHandler(teamCollectionSlug),
       method: 'get',
       path: '/appointments/available-slots',
     })
@@ -182,5 +185,4 @@ export const goromboAppointmentsPlugin =
 export { Appointments } from './collections/Appointments.js'
 export { GuestCustomers } from './collections/GuestCustomers.js'
 export { Services } from './collections/Services.js'
-export { TeamMembers } from './collections/TeamMembers.js'
 export { OpeningTimes } from './globals/OpeningTimes.js'

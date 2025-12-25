@@ -149,7 +149,8 @@ export const createGetAvailableSlotsHandler = (teamCollectionSlug: string): Payl
         )
       }
 
-      if (!teamMember.takingAppointments) {
+      // Only block if explicitly set to false - undefined means taking appointments
+      if (teamMember.takingAppointments === false) {
         return Response.json(
           { error: 'Team member is not taking appointments' },
           { status: 400 }

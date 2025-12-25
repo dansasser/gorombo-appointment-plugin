@@ -41,6 +41,7 @@ describe('Gorombo Appointments Plugin', () => {
         collection: 'services',
         data: {
           name: 'Test Service',
+          slug: 'test-service',
           duration: 30,
           price: 5000,
           isActive: true,
@@ -88,6 +89,7 @@ describe('Gorombo Appointments Plugin', () => {
         collection: 'services',
         data: {
           name: 'Appointment Test Service',
+          slug: 'appointment-test-service',
           duration: 60,
           price: 10000,
           isActive: true,
@@ -149,6 +151,7 @@ describe('Gorombo Appointments Plugin', () => {
         collection: 'services',
         data: {
           name: 'Validation Test Service',
+          slug: 'validation-test-service',
           duration: 30,
           price: 3000,
           isActive: true,

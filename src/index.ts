@@ -16,21 +16,16 @@ export type GoromboAppointmentsPluginConfig = {
    */
   disabled?: boolean
   /**
-   * Require a Media collection with this slug for team member avatars
-   * If not provided, defaults to 'media'
-   */
-  mediaCollectionSlug?: string
-  /**
-   * Require a Users collection with this slug for customer relationships
-   * If not provided, defaults to 'users'
-   */
-  usersCollectionSlug?: string
-  /**
    * External team collection slug for team member relationships
    * The plugin does NOT create its own team collection - you must provide one
    * If not provided, defaults to 'team'
    */
   teamCollectionSlug?: string
+  /**
+   * Require a Users collection with this slug for customer relationships
+   * If not provided, defaults to 'users'
+   */
+  usersCollectionSlug?: string
 }
 
 export const goromboAppointmentsPlugin =
@@ -38,9 +33,8 @@ export const goromboAppointmentsPlugin =
   (config: Config): Config => {
     const {
       disabled = false,
-      mediaCollectionSlug = 'media',
-      usersCollectionSlug = 'users',
       teamCollectionSlug = 'team',
+      usersCollectionSlug = 'users',
     } = pluginOptions
 
     // Initialize arrays if not present
